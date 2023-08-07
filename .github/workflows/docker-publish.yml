@@ -36,17 +36,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Get the pgm version
-        id: load
-        run: |
-          echo version=`cat pom.xml  |grep  '<version>.*</version>'|head -2 | tail -1 |sed 's/<version>\(.*\)<\/version>/\1/'|tr -d '[:space:]'` >> $GITHUB_OUTPUT  
-
-
-      - name: What version is this?
-        run: |
-          echo DocBook version ${{ pgm_version }}     
+        uses: actions/checkout@v3  
 
       # Install the cosign tool except on PR
       # https://github.com/sigstore/cosign-installer
