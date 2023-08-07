@@ -45,6 +45,9 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Checkout
+        uses: actions/checkout@v3
+        
       # Add Maven build step
       - name: Build with Maven
         run: mvn clean package
