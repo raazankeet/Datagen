@@ -81,7 +81,7 @@ jobs:
 
       - name: display version from pom.xml
         id: display
-        run: echo :${{ steps.extract-version.tttagg }}
+        run: echo "sss:${{ steps.extract-version.tttagg }}"
         
       # Build and push Docker image with Buildx (don't push on PR)
       # https://github.com/docker/build-push-action
