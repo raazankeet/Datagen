@@ -1,7 +1,7 @@
 name: build-specs
 on: push
 jobs:
-  load_config:
+  code_checkout:
     runs-on: ubuntu-latest
     outputs:
       pgm_version: ${{ steps.load.outputs.version }}
@@ -14,14 +14,59 @@ jobs:
         run: |
           echo version=`cat pom.xml  |grep  '<version>.*</version>'|head -2 | tail -1 |sed 's/<version>\(.*\)<\/version>/\1/'|tr -d '[:space:]'` >> $GITHUB_OUTPUT
 
-  build-and-deploy:
+  maven-build:
     runs-on: ubuntu-latest
-    needs: load_config
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+    needs: code_checkout
     env:
       PGM_VERSION: ${{ needs.load_config.outputs.pgm_version }}
+      REGISTRY: docker.io
+      IMAGE_NAME: raazankeet/data-generator
 
     steps:
       
-      - name: What version is this?
-        run: |
-          echo DocBook version ${{ env.PGM_VERSION }}
+      - name: Install cosign
+        if: github.event_name != 'pull_request'
+        uses: sigstore/cosign-installer@6e04d228eb30da1757ee4e1dd75a0ec73a653e06 #v3.1.1
+        with:
+          cosign-release: 'v2.1.1'
+          
+      - name: Setup Docker buildx
+        uses: docker/setup-buildx-action@79abd3f86f79a9d68a23c75a09a9a85889262adf    
+
+      - name: Log into registry ${{ env.REGISTRY }}
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@28218f9b04b4f3f62068d7b6ce6ca5b26e35336c
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # Add Maven build step
+      - name: Build with Maven
+        run: mvn clean package
+
+
+      - name: Build and push Docker image
+        id: build-and-push
+        uses: docker/build-push-action@ac9327eae2b366085ac7f6a2d02df8aa8ead720a
+        with:
+          context: .
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ env.PGM_VERSION }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max  
+
+      - name: Sign the published Docker image
+        if: ${{ github.event_name != 'pull_request' }}
+        env:
+          # https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions#using-an-intermediate-environment-variable
+          TAGS: ${{ steps.meta.outputs.tags }}
+          DIGEST: ${{ steps.build-and-push.outputs.digest }}
+        # This step uses the identity token to provision an ephemeral certificate
+        # against the sigstore community Fulcio instance.
+        run: echo "${TAGS}" | xargs -I {} cosign sign --yes {}@${DIGEST}    
