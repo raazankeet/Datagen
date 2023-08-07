@@ -46,7 +46,7 @@ jobs:
 
       - name: What version is this?
         run: |
-          echo DocBook version ${{ load.version }}     
+          echo DocBook version ${{ pgm_version }}     
 
       # Install the cosign tool except on PR
       # https://github.com/sigstore/cosign-installer
