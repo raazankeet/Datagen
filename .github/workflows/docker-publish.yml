@@ -22,7 +22,7 @@ jobs:
       id-token: write
     needs: code_checkout
     env:
-      PGM_VERSION: ${{ needs.load_config.outputs.pgm_version }}
+      PGM_VERSION: ${{ needs.code_checkout.outputs.pgm_version }}
       REGISTRY: docker.io
       IMAGE_NAME: raazankeet/data-generator
 
