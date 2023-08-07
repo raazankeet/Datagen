@@ -56,6 +56,10 @@ jobs:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+        
+        # Add Maven build step
+      - name: Build with Maven
+        run: mvn clean package   
 
       # Extract metadata (tags, labels) for Docker
       # https://github.com/docker/metadata-action
