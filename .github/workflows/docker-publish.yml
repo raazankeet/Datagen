@@ -4,7 +4,7 @@ jobs:
   load_config:
     runs-on: ubuntu-latest
     outputs:
-      dbversion: ${{ steps.load.outputs.version }}
+      pgm_version: ${{ steps.load.outputs.version }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -18,12 +18,10 @@ jobs:
     runs-on: ubuntu-latest
     needs: load_config
     env:
-      DBVERSION: ${{ needs.load_config.outputs.dbversion }}
+      PGM_VERSION: ${{ needs.load_config.outputs.pgm_version }}
 
     steps:
-      - name: Checkout the specifications
-        uses: actions/checkout@v3
-
+      
       - name: What version is this?
         run: |
-          echo DocBook version ${{ env.DBVERSION }}
+          echo DocBook version ${{ env.PGM_VERSION }}
