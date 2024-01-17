@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Data Generator</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+
+    <style>
+        body {
+            background-color: #333333;
+        }
+
+		small {
+            font-size: 30%; /* Adjust the size as needed */
+            margin-left: 10px; /* Adjust the margin as needed */
+			 color: #304FFE;
+        }
+
+        .container {
+            max-width: 80%;
+            margin: 40px auto;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            border-radius: 20px;
+            background-color: #fff;
+        }
+
+        .title {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .scrollable-table {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        /* Center-align the column names in the table */
+        .table th {
+            text-align: center;
+        }
+        .table td,
+        .table th {
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .table td,
+        .table th {
+            padding: 8px;
+        }
+
+        .btn-danger {
+            padding: 5px 10px;
+            font-size: 10px;
+            line-height: 1;
+        }
+
+        /* Highlight missing mandatory fields */
+        .mandatory-field:invalid {
+            border-color: #dc3545;
+        }
+
+        .mandatory-field:invalid+label::after {
+            content: ' *';
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+
+    </style>
+</head>
+
+<body>
+<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
+<div class="container">
+
+<h3 class="title text-center">
+    <span>Test Data Generator</span>
+    <small class="float-right">Release 1.0</small>
+
+</h3>
+	
+	
+
+
+    <div class="row">
+        <div class="col-6">
+            <div class="form-group">
+                <label for="numRecords">Number of Records</label>
+                <input type="number" class="form-control mandatory-field" id="numRecords" required>
+            </div>
+        </div>
+
+        <div class="col-6">
+            <div class="form-group">
+                <label for="localeSelect">Locale</label>
+                <select class="form-control mandatory-field" id="localeSelect" required>
+                    <option value="en_US">English (United States)</option>
+                    <option value="en_GB">English (United Kingdom)</option>
+                    <option value="en-AU">English (Australia)</option>
+                    <option value="en-IND">India</option>
+                    <option value="fr">France</option>
+                    <option value="ru">Russia</option>
+                    <option value="zh-CN">China</option>
+                    <option value="ja">Japan</option>
+                    <option value="ko">Korea</option>
+                    <option value="es">Spain</option>
+                    <option value="de">Germany</option>
+                    <!-- Add other supported locales as options -->
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <form id="dataForm">
+        <div class="row">
+            <div class="col-6">
+                <div class="form-group">
+                    <label for="columnName">Column Name</label>
+                    <input type="text" class="form-control mandatory-field" id="columnName" required>
+                    <div class="invalid-feedback">Column name must be unique and cannot be empty.</div>
+                </div>
+            </div>
+
+            <div class="col-6">
+                <div class="form-group">
+                    <label for="generatorSelect">Generator</label>
+                    <select class="form-control mandatory-field" id="generatorSelect" required>
+                        <option value="firstName">First Name</option>
+                        <option value="lastName">Last Name</option>
+                        <option value="fullName">Full Name</option>
+                        <option value="phoneNumber">Phone Number</option>
+                        <option value="city">City</option>
+                        <option value="state">State</option>
+                        <option value="zipcode">Zip Code</option>
+                        <option value="streetAddress">Street Address</option>
+                        <option value="fullAddress">Full Address</option>
+                        <option value="ssn">SSN</option>
+                        <option value="emailID">Email</option>
+                        <option value="bookName">Book Name</option>
+                        <option value="bookAuthor">Book Author</option>
+                        <option value="weather">Weather</option>
+                        <option value="temperature">Temperature</option>
+                        <option value="creditCardNumber">Credit Card Number</option>
+                        <option value="randomNumber">Random Number</option>
+                        <option value="artistName">Artist Name</option>
+
+                        <option value="quotes">Movie Quotes</option>
+                        <option value="sentences">Sentences</option>
+                        <option value="ancientGod">Ancient God</option>
+                        <option value="animalName">Animal Name</option>
+                        <option value="productName">Product Name</option>
+                        <option value="catchPhrase">Catchphrase</option>
+                        <option value="hospitalName">Hospital Name</option>
+                        <option value="diseaseName">Disease Name</option>
+                        <option value="medicineName">Medicine Name</option>
+                        <option value="sha256">SHA 256</option>
+                        <option value="futureDate">Future Date</option>
+                        <option value="pastDate">Past Date</option>
+                        <!-- Add other supported data types as options -->
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <button type="button" class="btn btn-primary" onclick="addColumn()">Add Column</button>
+
+        <div class="scrollable-table mt-3">
+            <table class="table table-bordered table-striped">
+                <thead class="thead-light">
+                <tr>
+                    <th>Column Name</th>
+                    <th>Generator</th>
+                    <th>Delete</th>
+                </tr>
+                </thead>
+                <tbody id="columnsContainer">
+                <!-- Columns will be dynamically added here -->
+                </tbody>
+            </table>
+        </div>
+
+    </form>
+    <h3 class="title mt-3">Generated Data</h3>
+    <div class="scrollable-table">
+        <table class="table table-bordered table-striped" id="generatedDataTable">
+            <thead class="thead-light" id="resultTableHeader">
+            <!-- Table header will be dynamically added here -->
+            </thead>
+            <tbody id="resultTableBody">
+            <!-- Top 5 rows will be displayed here -->
+            </tbody>
+        </table>
+    </div>
+
+    <div class="form-group mt-4 text-center d-flex justify-content-center">
+        <button type="button" id="generateButton" class="btn btn-success mr-2" onclick="generateData()">Generate Data</button>
+        <button type="button" id="downloadButton" class="btn btn-primary" onclick="downloadCSV()">Download CSV</button>
+    </div>
+
+</div>
+
+
+
+<script>
+    let columnCounter = 0;
+	let processingNotification;
+
+    const addedColumnNames = [];
+    let generatedData = [];
+
+
+    function addColumn() {
+        const columnNameInput = document.getElementById("columnName");
+        const generatorSelect = document.getElementById("generatorSelect");
+
+        if (columnNameInput.value.trim() === '') {
+            columnNameInput.setCustomValidity("Column name cannot be empty.");
+            columnNameInput.reportValidity();
+            return;
+        }
+
+        if (addedColumnNames.includes(columnNameInput.value.trim())) {
+            columnNameInput.setCustomValidity("Column name must be unique.");
+            columnNameInput.reportValidity();
+            return;
+        }
+
+        columnNameInput.setCustomValidity(""); // Reset validation state
+        columnNameInput.reportValidity();
+
+        const columnName = columnNameInput.value.trim();
+        const generator = generatorSelect.value;
+
+        const columnsContainer = document.getElementById("columnsContainer");
+
+        const row = document.createElement("tr");
+        row.innerHTML = `
+            <td>${columnName}</td>
+            <td>${generator}</td>
+            <td><button type="button" class="btn btn-danger" onclick="deleteColumn(this)">Delete</button></td>
+        `;
+
+        columnsContainer.appendChild(row);
+
+        addedColumnNames.push(columnName); // Add the new column name to the array
+        columnNameInput.value = '';
+        generatorSelect.selectedIndex = 0;
+    }
+
+    function deleteColumn(button) {
+        const row = button.parentElement.parentElement;
+        const columnName = row.cells[0].textContent;
+        addedColumnNames.splice(addedColumnNames.indexOf(columnName), 1);
+        row.remove();
+    }
+    function generateData() {
+	
+        const jsonData = {
+            numRecords: parseInt(document.getElementById("numRecords").value),
+            locale: document.getElementById("localeSelect").value,
+            columnsData: []
+        };
+
+        const columnsContainer = document.getElementById("columnsContainer");
+        const rows = columnsContainer.querySelectorAll("tr");
+
+        if (rows.length === 0) {
+            showToastMessage("Please add at least one column before generating data.");
+            return;
+        }
+        const numRecordsInput = document.getElementById("numRecords");
+        const numRecordsValue = parseInt(numRecordsInput.value);
+
+        if (isNaN(numRecordsValue) || numRecordsValue <= 0) {
+            showToastMessage("Please enter a valid number of records (greater than zero).");
+            return;
+        }
+
+        rows.forEach(row => {
+            const cells = row.querySelectorAll("td");
+            const columnName = cells[0].textContent;
+            const generator = cells[1].textContent;
+            jsonData.columnsData.push({ columnName, generator });
+        });
+showProcessingNotification();
+        // Send the data to the backend using fetch
+        fetch('/generateData', {
+            method: 'POST',
+            body: JSON.stringify(jsonData),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => {
+			hideProcessingNotification();
+			
+                if (!response.ok) {
+                    const errorStatus = response.status;
+                    const errorMessage = `Error: ${errorStatus} - ${response.statusText}`;
+                    throw new Error(errorMessage);
+                }
+                // Check if the response has content-type 'application/json'
+                const contentType = response.headers.get('content-type');
+                if (contentType && contentType.includes('application/json')) {
+                    return response.json(); // Parse the response as JSON
+                } else {
+                    throw new Error('Invalid response format. Expected JSON.');
+                }
+            })
+            .then(data => {
+               // console.log(data);
+
+                // Transpose the data to display as rows
+                const transposedData = [];
+                const columnHeaders = [];
+
+                data.forEach(columnData => {
+                    const columnName = columnData.columnName;
+                    columnHeaders.push(columnName);
+                    const values = columnData.values;
+                    for (let i = 0; i < values.length; i++) {
+                        if (!transposedData[i]) {
+                            transposedData[i] = {};
+                        }
+                        transposedData[i][columnName] = values[i];
+                    }
+                });
+
+                // Display the transposed data as a table
+                const tableBody = document.getElementById("resultTableBody");
+                tableBody.innerHTML = ''; // Clear previous data
+
+                // Display the table headers dynamically
+                const headerRow = document.createElement("tr");
+                columnHeaders.forEach(headerText => {
+                    const headerCell = document.createElement("th");
+                    headerCell.textContent = headerText;
+                    headerRow.appendChild(headerCell);
+                });
+                tableBody.appendChild(headerRow);
+
+                // Display the table rows
+                generatedData = transposedData;
+                const rowsToDisplay = transposedData.slice(0, 5);
+                rowsToDisplay.forEach(rowData => {
+                    const row = document.createElement("tr");
+                    columnHeaders.forEach(headerText => {
+                        const cell = document.createElement("td");
+                        cell.textContent = rowData[headerText] || ""; // Display empty string if value is missing
+                        row.appendChild(cell);
+                    });
+                    tableBody.appendChild(row);
+                });
+
+                // Show the download button
+                const downloadButton = document.getElementById("downloadButton");
+                downloadButton.style.display = "block";
+
+                showToastMessage("Data generated successfully.");
+
+            })
+            .catch(error => {
+			 hideProcessingNotification();
+                console.error('Error:', error);
+                showToastMessage("An error occurred while generating data. Please try again later.", true);
+            });
+    }
+
+    function downloadCSV() {
+        if (generatedData.length === 0) {
+            showToastMessage("No data generated yet. Please click 'Generate Data' first.");
+            return;
+        }
+
+        const now = new Date();
+        const year = now.getFullYear().toString();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const hour = String(now.getHours()).padStart(2, '0');
+        const minute = String(now.getMinutes()).padStart(2, '0');
+
+        const timestamp = `${year}_${month}_${day}_${hour}_${minute}`;
+        const fileName = `generated_data_${timestamp}.csv`;
+
+        const csvContent = "data:text/csv;charset=utf-8," + encodeURIComponent(convertToCSV(generatedData));
+        const downloadLink = document.createElement("a");
+        downloadLink.setAttribute("href", csvContent);
+        downloadLink.setAttribute("download", fileName);
+        downloadLink.click();
+
+    }
+
+    function convertToCSV(data) {
+        const header = Object.keys(data[0]).join(","); // CSV header
+        const rows = data.map(row => {
+            return Object.values(row).map(value => {
+                // Wrap values with double quotes if they contain a comma
+                if (value.toString().includes(",")) {
+                    return `"${value}"`;
+                }
+                return value;
+            }).join(",");
+        });
+        return header + "\n" + rows.join("\n");
+    }
+    function showToastMessage(message) {
+        Toastify({
+            text: message,
+            duration: 5000, // Display for 5 seconds
+            gravity: "top", // Show at the top
+            position: "right", // Position on the right side
+            offset: {
+                x: 5, // horizontal axis - can be a number or a string indicating unity. eg: '2em'
+                y: 20 // vertical axis - can be a number or a string indicating unity. eg: '2em'
+            },
+            style: {
+                background: "linear-gradient(to right, #DB6885, #972239)",
+            },
+            stopOnFocus: true // Close the notification when the user clicks on it
+        }).showToast();
+    }
+	
+function showProcessingNotification() {
+    Swal.fire({
+        title: 'Processing...',
+		text:'Please wait...',
+        didOpen: () => {
+            Swal.showLoading();
+        },
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        showCancelButton: false,
+    });
+}
+
+    function hideProcessingNotification() {
+        Swal.close();
+		showSuccessNotification();
+    }
+	
+	function showSuccessNotification() {
+        Swal.fire({
+            title: 'Process Complete!',
+            icon: 'success',
+            timer: 2000, // Adjust the duration as needed
+            showConfirmButton: false,
+        });
+    }
+
+</script>
+</body>
+
+</html>
