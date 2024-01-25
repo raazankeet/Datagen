@@ -86,7 +86,7 @@
 
     <h3 class="title text-center">
         <span>Test Data Generator</span>
-        <small class="float-right">Release 1.0</small>
+        <small class="float-right">Release 1.1</small>
 
     </h3>
 
@@ -154,6 +154,8 @@
                         <option value="creditCardNumber">Credit Card Number</option>
                         <option value="randomNumber">Random Number</option>
                         <option value="artistName">Artist Name</option>
+						
+						<option value="regex">Regular Expression (Regex)</option>
 
                         <option value="quotes">Movie Quotes</option>
                         <option value="sentences">Sentences</option>
@@ -220,43 +222,75 @@
     let generatedData = [];
 
 
-    function addColumn() {
-        const columnNameInput = document.getElementById("columnName");
-        const generatorSelect = document.getElementById("generatorSelect");
+function addColumn() {
+    const columnNameInput = document.getElementById("columnName");
+    const generatorSelect = document.getElementById("generatorSelect");
 
-        if (columnNameInput.value.trim() === '') {
-            columnNameInput.setCustomValidity("Column name cannot be empty.");
-            columnNameInput.reportValidity();
-            return;
-        }
-
-        if (addedColumnNames.includes(columnNameInput.value.trim())) {
-            columnNameInput.setCustomValidity("Column name must be unique.");
-            columnNameInput.reportValidity();
-            return;
-        }
-
-        columnNameInput.setCustomValidity(""); // Reset validation state
+    if (columnNameInput.value.trim() === '') {
+        columnNameInput.setCustomValidity("Column name cannot be empty.");
         columnNameInput.reportValidity();
-
-        const columnName = columnNameInput.value.trim();
-        const generator = generatorSelect.value;
-
-        const columnsContainer = document.getElementById("columnsContainer");
-
-        const row = document.createElement("tr");
-        row.innerHTML = `
-            <td>${columnName}</td>
-            <td>${generator}</td>
-            <td><button type="button" class="btn btn-danger" onclick="deleteColumn(this)">Delete</button></td>
-        `;
-
-        columnsContainer.appendChild(row);
-
-        addedColumnNames.push(columnName); // Add the new column name to the array
-        columnNameInput.value = '';
-        generatorSelect.selectedIndex = 0;
+        return;
     }
+
+    if (addedColumnNames.includes(columnNameInput.value.trim())) {
+        columnNameInput.setCustomValidity("Column name must be unique.");
+        columnNameInput.reportValidity();
+        return;
+    }
+
+    columnNameInput.setCustomValidity(""); // Reset validation state
+    columnNameInput.reportValidity();
+
+    const columnName = columnNameInput.value.trim();
+    const generator = generatorSelect.value;
+
+    let generatorValue;
+    if (generator === 'regex') {
+        Swal.fire({
+            title: `Enter Regular Expression for ${columnName}`,
+            input: 'text',
+            inputAttributes: {
+                autocapitalize: 'off'
+            },
+            showCancelButton: true,
+            confirmButtonText: 'Ok',
+            showLoaderOnConfirm: true,
+            preConfirm: (regexExpression) => {
+                if (!regexExpression) {
+                    Swal.showValidationMessage('Regular Expression cannot be empty');
+                }
+                return regexExpression;
+            },
+            allowOutsideClick: () => !Swal.isLoading(),
+        }).then((result) => {
+            if (result.isConfirmed) {
+                generatorValue = `Regex ${result.value}`;
+                addColumnRow(columnName, generatorValue);
+            }
+        });
+    } else {
+        generatorValue = generator;
+        addColumnRow(columnName, generatorValue);
+    }
+
+    columnNameInput.value = '';
+    generatorSelect.selectedIndex = 0;
+}
+function addColumnRow(columnName, generatorValue) {
+    const columnsContainer = document.getElementById("columnsContainer");
+
+    const row = document.createElement("tr");
+    row.innerHTML = `
+        <td>${columnName}</td>
+        <td>${generatorValue}</td>
+        <td><button type="button" class="btn btn-danger" onclick="deleteColumn(this)">Delete</button></td>
+    `;
+
+    columnsContainer.appendChild(row);
+
+    addedColumnNames.push(columnName); // Add the new column name to the array
+}	
+
 
     function deleteColumn(button) {
         const row = button.parentElement.parentElement;

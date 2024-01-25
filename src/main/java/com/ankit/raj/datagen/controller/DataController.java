@@ -15,6 +15,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
+import static com.ankit.raj.datagen.constants.FakerGenerators.generators;
+
 @CrossOrigin(origins = "*")
 @RestController
 public class DataController {
@@ -25,6 +27,8 @@ public class DataController {
         List<String> quoteList = Arrays.asList("friendsQuotes", "harryPotterQuotes", "hobbitQuotes", "himymQuotes", "hhgttgQuotes",
                 "gotQuotes", "rickandmortyQuotes", "lebowskiQuotes", "matzQuotes", "overwatchQuotes","princessbrideQuotes");
         String quoteGenerator;
+
+
         try {
             // Validate the request data before processing
             if (requestData.getNumRecords() <= 0) {
@@ -43,13 +47,38 @@ public class DataController {
 
             for (ColumnData columnData : requestData.getColumnsData()) {
                 String columnName = columnData.getColumnName();
+
                 List<String> values = new ArrayList<>();
 
                 String generatorType = columnData.getGenerator();
+
+
+                String userRegex;
+                if (generatorType.startsWith("Regex")){
+
+                    int index = generatorType.indexOf("Regex");
+
+                    if (index != -1){
+                        userRegex=generatorType.substring(index + "Regex".length()).trim();
+                        System.out.println("user reg:"+userRegex);
+                    }
+                    else {
+                        System.out.println("ssss");
+                        throw new RuntimeException("Unable to get regular expression.");
+
+                    }
+
+                    generators.put("regex", ff ->   faker.regexify(userRegex));
+                    generatorType="regex";
+                }
+
+
                 if (!FakerGenerators.isValidGenerator(generatorType)) {
                     invalidGenerators.add(generatorType);
                     continue;
                 }
+
+
 
                 for (int i = 0; i < requestData.getNumRecords(); i++) {
 

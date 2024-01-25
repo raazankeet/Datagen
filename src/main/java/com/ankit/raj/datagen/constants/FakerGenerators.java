@@ -24,6 +24,7 @@ public class FakerGenerators {
     public static final String ANCIENT_GOD = "ancientGod";
     public static final String ANIMAL_NAME = "animalName";
     public static final String ARTIST_NAME = "artistName";
+    public static final String REGEX = "regex";
     public static final String CREDIT_CARD_NUMBER = "creditCardNumber";
     public static final String PRODUCT_NAME = "productName";
     public static final String CATCH_PHRASE = "catchPhrase";
@@ -59,7 +60,7 @@ public class FakerGenerators {
 
     // Add more generator types here if needed
 
-    private static final Map<String, Function<Faker, String>> generators = new HashMap<>();
+    public static Map<String, Function<Faker, String>> generators = new HashMap<>();
 
     static {
         generators.put(FIRST_NAME, faker -> faker.name().firstName());
@@ -110,6 +111,7 @@ public class FakerGenerators {
         generators.put(OVERWATCH_QUOTES, faker ->   faker.overwatch().quote());
         generators.put(PRINCESSBRIDE_QUOTES, faker ->   faker.princessBride().quote());
         generators.put(FRIENDS_QUOTES, faker ->   faker.friends().quote());
+
         // Add more generators here if needed
     }
 
@@ -118,6 +120,7 @@ public class FakerGenerators {
     }
 
     public static String generateValue(Faker faker, String generatorType) {
+
         Function<Faker, String> generatorFunction = generators.getOrDefault(generatorType, f -> "Unknown generator");
         return generatorFunction.apply(faker);
     }
@@ -153,6 +156,7 @@ public class FakerGenerators {
                 generator.equals(TEMPERATURE) ||
                 generator.equals(BOOK_NAME) ||
                 generator.equals(BOOK_AUTHOR) ||
+                generator.equals(REGEX) ||
                 generator.equals(FULL_ADDRESS);
         // Add more valid generator types as needed...
     }
